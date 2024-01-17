@@ -76,6 +76,9 @@ public:
   Standard_EXPORT virtual void SetDefaultVisualInfo (Aspect_XVisualInfo* theVisual,
                                                      Aspect_FBConfig theFBConfig) Standard_OVERRIDE;
 
+  //! Return file description for this connection.
+  Standard_EXPORT int FileDescriptor() const;
+
 #ifdef X_PROTOCOL
   //! Constructor wrapping existing Display instance.
   //! WARNING! it is a responsibility of application to keep this pointer

@@ -87,6 +87,19 @@ Xw_DisplayConnection::Xw_DisplayConnection (Aspect_XDisplay* theDisplay)
 }
 
 // =======================================================================
+// function : FileDescriptor
+// purpose  :
+// =======================================================================
+int Xw_DisplayConnection::FileDescriptor() const
+{
+#if defined(HAVE_XLIB)
+  return myDisplay != nullptr ? XConnectionNumber((Display* )myDisplay) : 0;
+#else
+  return 0;
+#endif
+}
+
+// =======================================================================
 // function : SetDefaultVisualInfo
 // purpose  :
 // =======================================================================
@@ -122,7 +135,7 @@ void Xw_DisplayConnection::Init (Aspect_XDisplay* theDisplay)
   if (myDisplay == NULL)
   {
     TCollection_AsciiString aMessage;
-    aMessage += "Can not connect to the server \"";
+    aMessage += "Can not connect to the X11 server \"";
     aMessage += myDisplayName + "\"";
     throw Aspect_DisplayConnectionDefinitionError(aMessage.ToCString());
   }

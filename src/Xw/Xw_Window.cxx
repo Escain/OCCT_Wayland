@@ -26,7 +26,7 @@
   //#include <X11/XF86keysym.h>
 #endif
 
-#include <Aspect_DisplayConnection.hxx>
+#include <Xw_DisplayConnection.hxx>
 
 IMPLEMENT_STANDARD_RTTIEXT(Xw_Window, Aspect_Window)
 
@@ -34,7 +34,7 @@ IMPLEMENT_STANDARD_RTTIEXT(Xw_Window, Aspect_Window)
 // function : Xw_Window
 // purpose  :
 // =======================================================================
-Xw_Window::Xw_Window (const Handle(Aspect_DisplayConnection)& theXDisplay,
+Xw_Window::Xw_Window (const Handle(Xw_DisplayConnection)& theXDisplay,
                       const Standard_CString theTitle,
                       const Standard_Integer thePxLeft,
                       const Standard_Integer thePxTop,
@@ -121,7 +121,7 @@ Xw_Window::Xw_Window (const Handle(Aspect_DisplayConnection)& theXDisplay,
 // function : Xw_Window
 // purpose  :
 // =======================================================================
-Xw_Window::Xw_Window (const Handle(Aspect_DisplayConnection)& theXDisplay,
+Xw_Window::Xw_Window (const Handle(Xw_DisplayConnection)& theXDisplay,
                       const Aspect_Drawable theXWin,
                       const Aspect_FBConfig theFBConfig)
 : Aspect_Window(),
@@ -177,6 +177,15 @@ Xw_Window::~Xw_Window()
     XDestroyWindow (myDisplay->GetDisplay(), (Window )myXWindow);
   #endif
   }
+}
+
+// =======================================================================
+// function : DisplayConnection
+// purpose  :
+// =======================================================================
+const Handle(Aspect_DisplayConnection)& Xw_Window::DisplayConnection() const
+{
+  return myDisplay;
 }
 
 // =======================================================================
@@ -396,7 +405,11 @@ void Xw_Window::InvalidateContent (const Handle(Aspect_DisplayConnection)& theDi
   }
 
 #if defined(HAVE_XLIB)
-  const Handle(Aspect_DisplayConnection)& aDisp = !theDisp.IsNull() ? theDisp : myDisplay;
+  Xw_DisplayConnection* aDisp = !theDisp.IsNull() ? dynamic_cast<Xw_DisplayConnection*>(theDisp.get()) : myDisplay.get();
+  if (aDisp == nullptr)
+  {
+    throw Aspect_WindowDefinitionError("Xw_Window::InvalidateContent(): Invalid X Display");
+  }
   Display* aDispX = aDisp->GetDisplay();
 
   XEvent anEvent;

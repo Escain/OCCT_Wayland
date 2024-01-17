@@ -96,6 +96,7 @@
   #include <WNT_WClass.hxx>
   #include <WNT_Window.hxx>
 #elif defined(HAVE_XLIB)
+  #include <Xw_DisplayConnection.hxx>
   #include <Xw_Window.hxx>
   #include <X11/Xlib.h>
   #include <X11/Xutil.h>
@@ -528,7 +529,7 @@ TCollection_AsciiString ViewerTest::ViewerInit (const ViewerTest_VinitParams& th
   #if defined(HAVE_XLIB)
     if (!theParams.DisplayName.IsEmpty())
     {
-      SetDisplayConnection (new Aspect_DisplayConnection (theParams.DisplayName));
+      SetDisplayConnection (new Xw_DisplayConnection (theParams.DisplayName));
     }
     else
     {
@@ -539,7 +540,7 @@ TCollection_AsciiString ViewerTest::ViewerInit (const ViewerTest_VinitParams& th
       Tcl_Interp* aTclInterp = aCommands.Interp();
       Tk_Window aMainWindow = Tk_MainWindow (aTclInterp);
       aDispX = aMainWindow != NULL ? Tk_Display (aMainWindow) : NULL;*/
-      SetDisplayConnection (new Aspect_DisplayConnection (aDispX));
+      SetDisplayConnection (new Xw_DisplayConnection (aDispX));
     }
   #else
     SetDisplayConnection (new Aspect_DisplayConnection ());
@@ -710,7 +711,7 @@ TCollection_AsciiString ViewerTest::ViewerInit (const ViewerTest_VinitParams& th
                                      Quantity_NOC_BLACK);
     VT_GetWindow()->RegisterRawInputDevices (WNT_Window::RawInputMask_SpaceMouse);
   #elif defined(HAVE_XLIB)
-    VT_GetWindow() = new Xw_Window (aGraphicDriver->GetDisplayConnection(),
+    VT_GetWindow() = new Xw_Window (Handle(Xw_DisplayConnection)::DownCast(aGraphicDriver->GetDisplayConnection()),
                                     aTitle.ToCString(),
                                     (int )aPxTopLeft.x(), (int )aPxTopLeft.y(),
                                     (int )aPxSize.x(), (int )aPxSize.y());
